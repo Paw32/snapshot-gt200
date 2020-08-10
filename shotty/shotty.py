@@ -117,8 +117,13 @@ def list_instances(project):
 @instances.command('stop')
 @click.option('--project', default=None,
     help = 'Only instances for project (tag Project:<name>)')
-def stop_instances(project):
+@click.option('--force', 'force_action', default=False, is_flag=True,
+    help="Force action when no project is specified (ALL INSTANCES)")
+def stop_instances(project, force_action):
     "Stop EC2 instances"
+    if not (project or force_action):
+        print("Action requires --force option")
+        return
     instances = filter_instances(project)
     for i in instances:
         print("Stopping {0}...".format(i.id))
@@ -132,8 +137,13 @@ def stop_instances(project):
 @instances.command('start')
 @click.option('--project', default=None,
     help = 'Only instances for project (tag Project:<name>)')
-def start_instances(project):
+@click.option('--force', 'force_action', default=False, is_flag=True,
+    help="Force action when no project is specified (ALL INSTANCES)")
+def start_instances(project, force_action):
     "Start EC2 instances"
+    if not (project or force_action):
+        print("Action requires --force option")
+        return
     instances = filter_instances(project)
     for i in instances:
         print("Starting {0}...".format(i.id))
@@ -141,6 +151,26 @@ def start_instances(project):
             i.start()
         except botocore.exceptions.ClientError as e:
             print(" Couln not start {0}. ".format(i.id) + str(e))
+            continue
+    return
+
+@instances.command('reboot')
+@click.option('--project', default=None,
+    help = 'Only instances for project (tag Project:<name>)')
+@click.option('--force', 'force_action', default=False, is_flag=True,
+    help="Force action when no project is specified (ALL INSTANCES)")
+def reboot_instances(project, force_action):
+    "Reboot EC2 instances"
+    if not (project or force_action):
+        print("Action requires --force option")
+        return
+    instances = filter_instances(project)
+    for i in instances:
+        print("Rebooting {0}...".format(i.id))
+        try:
+            i.reboot()
+        except botocore.exceptions.ClientError as e:
+            print(" Couln not reboot {0}. ".format(i.id) + str(e))
             continue
     return
 
