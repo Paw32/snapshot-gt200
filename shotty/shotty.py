@@ -19,8 +19,14 @@ def has_pending_snapshot(volume):
     return snapshots and snapshots[0].state == 'pending'
 
 @click.group()
-def cli():
+@click.option('--profile', default=None,
+    help="Specify AWSCLI profile to use")
+def cli(profile):
     """Shooty manages snapshots"""
+    if profile:
+        print("The profile {0} was given".format(profile))
+        session = boto3.Session(profile_name=profile)
+        ec2 = session.resource('ec2')
 
 @cli.group('snapshots')
 def snapshots():
