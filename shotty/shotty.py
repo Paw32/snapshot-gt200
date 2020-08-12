@@ -99,8 +99,8 @@ def create_snapshots(project, force_action, instance_id):
         print("Action requires --force option")
         return
     instances = filter_instances(project, instance_id)
-    was_running = False
     for i in instances:
+        was_running = False
         if i.state['Name'] == 'running':
             was_running = True
             print("Stopping {0}...".format(i.id))
